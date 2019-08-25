@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">PriceChecker</string>
+    <string name="activity_main_label_scan">Scan Your Barcode Here</string>
+    <string name="activity_login_hint_username">Username</string>
+    <string name="activity_login_hint_password">Password</string>
+    <string name="activity_login_login_button">Login</string>
+    <string name="activity_login_label_forgot_password">Forgot Password?</string>
+    <string name="activity_setting_label_api">API</string>
+    <string name="activity_setting_api">http://example.com</string>
+    <string name="activity_setting_label_sample_api">Please ensure your API is same format with this <b>Sample Api Format</b>   (<u><b>Format</b></u>)</string>
+    <string name="activity_setting_label_video">Video/Picture</string>
+    <string name="activity_setting_button_select_video">Select From Gallery</string>
+    <string name="activity_setting_video_explaination">This selected video/picture will be played/displayed automatically once the machine is in idle state.</string>
+    <string name="action_bar_save">Save</string>
+    <string name="activity_change_user_detail">New Username</string>
+    <string name="activity_change_user_detail_hint_new_password">New Password</string>
+    <string name="activity_change_user_detail_hint_confirm_password">Confirm Password</string>
+    <string name="activity_change_user_detail_label">*For your next login will depends on these information that you have changed.</string>
+    <string name="display_product_dialog_label_unit">RM</string>
+    <string name="display_product_dialog_label_price">Price:</string>
+    <string name="select_from_gallery_title">File Type</string>
+    <string name="select_from_gallery_label_picture">Picture</string>
+    <string name="select_from_label_video">Video</string>
+    <string name="display_product_dialog_label_description">Description:</string>
+    <string name="display_product_dialog_label_remark">Remark:</string>
+    <string name="activity_setting_label_scan_speed">Scan Speed</string>
+    <string name="activity_setting_scan_speed_explaination">The length of barcode maybe affects the performance of scanner, in order to optimize the performance, user can freely to adjust the scan time.</string>
+    <string name="activity_setting_label_shut_down_time">Daily Shut Down Timer</string>
+    <string name="activity_setting_label_shut_down_timer">This scanner will shut down automatically based on the time that you selected</string>
+    <string name="activity_setting_label_shut_down">Click to setup your daily shut down timer</string>
+</resources>

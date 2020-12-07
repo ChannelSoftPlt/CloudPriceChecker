@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jby.pricechecker.sharePreference.SharedPreferenceManager;
 
@@ -18,7 +19,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // show toast
         Log.d("haha", "Alarm Manager: isRunning ");
         setUpNewwShutDownTimer(context);
-        shutDown();
+        shutDown(context);
     }
 
     private void setUpNewwShutDownTimer(Context context){
@@ -35,13 +36,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    private void shutDown(){
-//        try {
-//            Process proc = Runtime.getRuntime()
-//                    .exec(new String[]{ "su", "-c", "reboot -p" });
-//            proc.waitFor();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
+    private void shutDown(Context context){
+        try {
+            Process proc = Runtime.getRuntime().exec(new String[]{ "su", "0", "reboot", "-p"});
+            proc.waitFor();
+        } catch (Exception ex) {
+            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
+            ex.printStackTrace();
+        }
     }
 }

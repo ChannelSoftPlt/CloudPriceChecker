@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class SharedPreferenceManager {
 
+    private static String Auth = "auth";
     private static String UserID = "uid";
     private static String API = "api";
     private static String VideoPath = "videoPath";
@@ -19,6 +20,7 @@ public class SharedPreferenceManager {
     private static String ShutDownTimer = "shutDownTimer";
     private static String DisplayTimer = "displayTimer";
     private static String CurrentDate = "currentDate";
+    private static String TouchScreen = "touch_screen";
 
     private static SharedPreferences getSharedPreferences(Context context) {
         String SharedPreferenceFileName = "PriceChecker";
@@ -44,7 +46,7 @@ public class SharedPreferenceManager {
 
 
     public static String getAPI(Context context) {
-        return getSharedPreferences(context).getString(API, "http://188.166.186.198/~cheewee/price_checker/fetch.php");
+        return getSharedPreferences(context).getString(API, "https://www.channelsoft.com.my");
     }
 
     public static void setAPI(Context context, String api) {
@@ -97,6 +99,22 @@ public class SharedPreferenceManager {
 
     public static void setCurrentDate(Context context, String currentDate) {
         getSharedPreferences(context).edit().putString(CurrentDate, currentDate).apply();
+    }
+
+    public static boolean getTouchScreen(Context context) {
+        return getSharedPreferences(context).getBoolean(TouchScreen, false);
+    }
+
+    public static void setTouchScreen(Context context, boolean touchScreen) {
+        getSharedPreferences(context).edit().putBoolean(TouchScreen, touchScreen).apply();
+    }
+
+    public static boolean getAuth(Context context) {
+        return getSharedPreferences(context).getBoolean(Auth, false);
+    }
+
+    public static void setAuth(Context context, boolean auth) {
+        getSharedPreferences(context).edit().putBoolean(Auth, auth).apply();
     }
 
 }

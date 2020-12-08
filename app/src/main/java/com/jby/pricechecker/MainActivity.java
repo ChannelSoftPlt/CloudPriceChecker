@@ -2,21 +2,18 @@ package com.jby.pricechecker;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,16 +28,15 @@ import com.android.volley.toolbox.StringRequest;
 import com.droidnet.DroidListener;
 import com.droidnet.DroidNet;
 import com.jby.pricechecker.others.MySingleton;
+import com.jby.pricechecker.receiver.AlarmReceiver;
 import com.jby.pricechecker.sharePreference.SharedPreferenceManager;
 
-import junit.runner.Version;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Delayed;
 
 import im.delight.android.webview.AdvancedWebView;
 
@@ -56,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     private Handler handler;
 
     private String barcode = "";
+    private String defaultUrl = "https://emenu.com.my/price_checker/index.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
 
         mDroidNet = DroidNet.getInstance();
         mDroidNet.addInternetConnectivityListener(this);
-
     }
 
 
@@ -98,10 +94,12 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     }
 
     private void preChecking() {
+        AlarmReceiver.setShutDownTimer(this);
         checkTouchScreen();
-        if (SharedPreferenceManager.getAPI(this).equals("https://wwww.channelsoft.com.my")) {
-            openSettingPage(null);
-        } else loadWebView();
+        loadWebView();
+//        if (SharedPreferenceManager.getAPI(this).equals("https://www.channelsoft.com.my")) {
+//            openSettingPage(null);
+//        } else loadWebView();
     }
 
 
@@ -130,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     }
 
     public void checkDeviceAvailability(final String deviceId) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://emenu.com.my/price_checker/index.php", new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, defaultUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -176,14 +174,13 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Device Not Found");
         builder.setMessage("Please make sure you have registered this device.");
-        builder.setCancelable(false);
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                finish();
-            }
-        });
-
+//        builder.setCancelable(false);
+//        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialogInterface) {
+//                finish();
+//            }
+//        });
         builder.setPositiveButton("Okay", null);
         AlertDialog alert = builder.create();
         alert.show();
@@ -293,15 +290,6 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         startActivityForResult(new Intent(this, SettingActivity.class), UPDATE_MAIN_ACTIVITY);
     }
 
-    public void shutDown() {
-        try {
-            Process proc = Runtime.getRuntime().exec(new String[]{"su", "0", "reboot", "-p"});
-            proc.waitFor();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     //    --------------------------------------------------full screen-----------------------------------------------------------------------
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -367,6 +355,16 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
             objectSetting();
         } else {
             showProgressBar(true, "Something wrong with your network!");
+        }
+    }
+
+    /*------------------------------------------------------------------shut down-------------------------------------------------------------*/
+    public void shutDown() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"su", "0", "reboot", "-p"});
+            process.waitFor();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

@@ -1,47 +1,78 @@
 package com.jby.pricechecker.receiver;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import android.util.Log;
-import android.widget.Toast;
+
 
 import com.jby.pricechecker.sharePreference.SharedPreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 public class AlarmReceiver extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        // show toast
-        Log.d("haha", "Alarm Manager: isRunning ");
-        setUpNewwShutDownTimer(context);
-        shutDown(context);
+//        Bundle bundle = new Bundle();
+//        bundle.putBoolean("refresh", true);
+//        bundle.putString("alarm_id", intent.getStringExtra("alarm_id"));
+//
+//        Intent i = new Intent("alarmManager");
+//        i.putExtras(bundle);
+//        Log.d("haha", "Alarm Fired");
+//        Log.d("haha", intent.getStringExtra("alarm_id"));
+//        context.sendBroadcast(i);
+        shutDown();
     }
 
-    private void setUpNewwShutDownTimer(Context context){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date); // e.g. 2015-01-18
-        //if current date is different
-        if(!currentDate.equals(SharedPreferenceManager.getCurrentDate(context))){
-            //set new timer before close
-            long newTimer = SharedPreferenceManager.getShutDownTimer(context) + 86400000;
-            SharedPreferenceManager.setShutDownTimer(context, newTimer);
-            //set new current date
-            SharedPreferenceManager.setCurrentDate(context, currentDate);
+    /*
+     * set shut down timer
+     * */
+    public static void setShutDownTimer(Context context) {
+        //alarm setting
+        AlarmManager alarmManager;
+        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        alarmIntent.putExtra("alarm_id", "shut_down_timer");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 3, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        try {
+            Calendar cal = Calendar.getInstance();
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+
+            String shutDownTimer = SharedPreferenceManager.getShutDownTimer(context);
+            Date currentTime = formatter.parse(formatter.format(cal.getTime()));
+            Date shutDownTime = formatter.parse(shutDownTimer);
+
+            if (currentTime.before(shutDownTime) || currentTime == shutDownTime) {
+                String[] timer = shutDownTimer.split(":");
+                cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timer[0]));
+                cal.set(Calendar.MINUTE, Integer.parseInt(timer[1]));
+
+                alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+            } else {
+                Log.d("MainActivity", "Shut Down Time is over!");
+            }
+
+        } catch (Exception e) {
+            Log.d("MainActivity", "unable to set shut down timer");
+            e.printStackTrace();
         }
     }
 
-    private void shutDown(Context context){
+    public void shutDown() {
         try {
-            Process proc = Runtime.getRuntime().exec(new String[]{ "su", "0", "reboot", "-p"});
-            proc.waitFor();
+            Process process = Runtime.getRuntime().exec(new String[]{"su", "0", "reboot", "-p"});
+            process.waitFor();
         } catch (Exception ex) {
-            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
             ex.printStackTrace();
         }
     }

@@ -1,9 +1,6 @@
 package com.jby.pricechecker;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,7 +17,6 @@ import android.widget.Toast;
 import com.jby.pricechecker.receiver.AlarmReceiver;
 import com.jby.pricechecker.sharePreference.SharedPreferenceManager;
 
-
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
@@ -33,7 +29,6 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private EditText settingActivityApi;
     private CheckBox settingActivityTouchScreen;
     private TextView settingActivitySampleApi, settingActivityShutDownTimer, settingActivityVersion;
-
 
     private TimePickerDialog timePicker;
     private Calendar calendar, mCurrentTime;
@@ -83,11 +78,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private void initializeValue() {
         settingActivityApi.append(SharedPreferenceManager.getAPI(this));
 
-        if (!SharedPreferenceManager.getDisplayTimer(this).equals("default"))
-            settingActivityShutDownTimer.setText(SharedPreferenceManager.getDisplayTimer(this));
+        if (!SharedPreferenceManager.getShutDownTimer(this).equals("default"))
+            settingActivityShutDownTimer.setText(SharedPreferenceManager.getShutDownTimer(this));
 
         settingActivityTouchScreen.setChecked(SharedPreferenceManager.getTouchScreen(this));
-
         setVersion();
     }
 
@@ -110,8 +104,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
         SharedPreferenceManager.setTouchScreen(this, settingActivityTouchScreen.isChecked());
 
-        if (calendar != null)
-            setUpAlarm();
+        if (calendar != null && !time.equals("-")){
+            SharedPreferenceManager.setShutDownTimer(this, time);
+            AlarmReceiver.setShutDownTimer(this);
+        }
 
         if (api.equals("default")) {
             startActivity(new Intent(this, MainActivity.class));
@@ -156,19 +152,17 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         timePicker.show();
     }
 
-    private void setUpAlarm() {
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-
-        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        if (manager != null) {
-            manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
-
-        SharedPreferenceManager.setShutDownTimer(this, calendar.getTimeInMillis());
-        SharedPreferenceManager.setCurrentDate(this, "default");
-        SharedPreferenceManager.setDisplayTimer(this, time);
-    }
+//    private void setUpAlarm() {
+//        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+//
+//        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        if (manager != null) {
+//            manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+//        }
+//
+//        SharedPreferenceManager.setShutDownTimer(this, calendar.getTimeInMillis());
+//    }
 
     public void setVersion() {
         try {

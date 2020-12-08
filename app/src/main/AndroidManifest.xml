@@ -61,9 +61,5 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <activity
-            android:name=".ChangeUserDetailActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
     </application>
 </manifest>

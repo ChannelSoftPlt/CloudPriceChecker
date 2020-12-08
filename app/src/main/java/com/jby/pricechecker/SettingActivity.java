@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -102,11 +100,6 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.activity_setting_shut_down_timer:
                 selectTimeDialog();
-                break;
-            case R.id.activity_setting_sample_api:
-                DialogFragment dialogFragment = new SampleApiDialog();
-                FragmentManager fm = getSupportFragmentManager();
-                dialogFragment.show(fm, "");
                 break;
         }
     }

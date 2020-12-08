@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -41,6 +40,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Delayed;
 
 import im.delight.android.webview.AdvancedWebView;
 
@@ -172,19 +172,6 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         } else return Build.getSerial();
     }
 
-    @SuppressLint({"MissingPermission", "HardwareIds"})
-    public String getDeviceIMEI() {
-        String deviceUniqueIdentifier = null;
-        TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        if (null != tm) {
-            deviceUniqueIdentifier = tm.getDeviceId();
-        }
-        if (null == deviceUniqueIdentifier || 0 == deviceUniqueIdentifier.length()) {
-            deviceUniqueIdentifier = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-        return deviceUniqueIdentifier;
-    }
-
     private void showInvalidDeviceDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Device Not Found");
@@ -274,22 +261,19 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        if (e.getAction() == KeyEvent.ACTION_DOWN
-                && e.getKeyCode() != KeyEvent.KEYCODE_ENTER) { //Not Adding ENTER_KEY to barcode String
+
+        if (e.getAction() == KeyEvent.ACTION_UP) {
             char pressedKey = (char) e.getUnicodeChar();
             barcode += pressedKey;
         }
-        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            Toast.makeText(this, "" + barcode, Toast.LENGTH_SHORT).show();
+        if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             scanAction(barcode);
             barcode = "";
         }
-        return true;
+        return super.dispatchKeyEvent(e);
     }
 
-
     private void scanAction(final String result) {
-        Toast.makeText(this, "" + result, Toast.LENGTH_SHORT).show();
         switch (result) {
             //log out
             case "2222exit":
@@ -363,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
 
     @Override
     public void onPageError(int errorCode, String description, String failingUrl) {
-
+        showProgressBar(true, "Page Not Found!");
     }
 
     @Override

@@ -174,13 +174,13 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Device Not Found");
         builder.setMessage("Please make sure you have registered this device.");
-//        builder.setCancelable(false);
-//        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialogInterface) {
-//                finish();
-//            }
-//        });
+        builder.setCancelable(false);
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                finish();
+            }
+        });
         builder.setPositiveButton("Okay", null);
         AlertDialog alert = builder.create();
         alert.show();
@@ -242,29 +242,15 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     }
 
     /*--------------------------------------------------scan purpose-----------------------------------------------------------------*/
-//    @Override
-//    public boolean dispatchKeyEvent(KeyEvent e) {
-//
-//        if (e.getAction() == KeyEvent.ACTION_DOWN) {
-//            char pressedKey = (char) e.getUnicodeChar();
-//            barcode += pressedKey;
-//        }
-//        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-//            scanAction(barcode.trim());
-//            barcode = "";
-//        }
-//        return super.dispatchKeyEvent(e);
-//    }
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
 
-        if (e.getAction() == KeyEvent.ACTION_UP) {
+        if (e.getAction() == KeyEvent.ACTION_DOWN) {
             char pressedKey = (char) e.getUnicodeChar();
             barcode += pressedKey;
         }
-        if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            scanAction(barcode);
+        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            scanAction(barcode.trim());
             barcode = "";
         }
         return super.dispatchKeyEvent(e);
@@ -280,8 +266,18 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
             case "3333setting":
                 openSettingPage(null);
                 break;
+//            case "4444shutdown":
+//                shutDown();
+//                break;
             case "4444shutdown":
-                shutDown();
+                boolean lockScreen = SharedPreferenceManager.getTouchScreen(this);
+                SharedPreferenceManager.setTouchScreen(this, !lockScreen);
+                if (lockScreen) {
+                    Toast.makeText(this, "Touch Screen is unlocked!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Touch Screen is locked!", Toast.LENGTH_SHORT).show();
+                }
+                checkTouchScreen();
                 break;
         }
     }

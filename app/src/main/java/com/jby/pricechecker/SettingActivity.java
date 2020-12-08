@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -99,6 +100,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void save() {
+        hideKeyboard();
         String api = SharedPreferenceManager.getAPI(this);
         SharedPreferenceManager.setAPI(this, settingActivityApi.getText().toString().trim());
 
@@ -152,17 +154,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         timePicker.show();
     }
 
-//    private void setUpAlarm() {
-//        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-//
-//        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        if (manager != null) {
-//            manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-//        }
-//
-//        SharedPreferenceManager.setShutDownTimer(this, calendar.getTimeInMillis());
-//    }
+    private void hideKeyboard(){
+        InputMethodManager imm =(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
 
     public void setVersion() {
         try {
